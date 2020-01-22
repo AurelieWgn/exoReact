@@ -4,7 +4,7 @@ import { Link} from "react-router-dom"
 const initialState = {
     moyenne: 0,
     notes: [],
-    currentNote: 0,
+    currentNote: "",
 
 };
 
@@ -13,21 +13,23 @@ const reducer = (state, action) => {
     switch (action.type) {
         case "notes":
             if(state.notes.length >= 10){
+
                 alert("Vous ne pouvez saisir que 10 notes max");
             }else{
-                let newTab = state.notes.push( parseInt(state.currentNote));
-                console.log("newTab", newTab);
+                let newTab = state.notes;
+                newTab.push( parseInt(state.currentNote));
                 return {...state, notes: newTab};
             }
         case "moyenne" :
-            if(state.notes){
-                let total = 0;
-                for(let i = 0; i<state.notes.lenght; i++){
-                    console.log("coucou");
-                    total += state.notes[i];
-                }
-                return {...state, moyenne: total};
-            };
+
+            let total = 0;
+            for(let i = 0; i<=state.notes.length-1; i++){
+                console.log(state.notes[i]);
+                total += state.notes[i];
+            }
+            let moy = total/state.notes.length
+            return {...state, moyenne: moy};
+
         case "saveCurrentNote":
             return {...state, currentNote: action.payload};
         default :
@@ -43,11 +45,15 @@ export default function Exo2() {
 
 
     const generateNotes=()=>{
-        let boucle = initialState.notes.map((item, i) =>
-                    item + ", "
+        let boucle = state.notes.map((item, i) =>
+                   item + " "
              )
-        console.log(boucle);
-        // return boucle;
+        return boucle;
+    }
+
+    const addnote = (event) =>{
+        event.preventDefault();
+        dispatch({ type: "notes"});
     }
 
     return (
@@ -58,9 +64,9 @@ export default function Exo2() {
             <br/>
             <br/>
 
-            <form onSubmit={(event) => dispatch({ type: "notes" })} >
+            <form onSubmit={(event)=>addnote(event)} >
                 <span> Saisir une note </span>
-                <input id={"value"} type="number" min="0" max="20" onChange={(event) => dispatch({ type: "saveCurrentNote", payload: event.target.value })} />
+                <input type="number" value={state.currentNote} min="0" max="20" onChange={(event) => dispatch({ type: "saveCurrentNote", payload: event.target.value })} />
                 <button type="submit">Ajouter la note</button>
             </form>
 
